@@ -12,18 +12,12 @@ const Todo = () => {
     const [inputData, setInputData] = useState("");
     const [id, setId] = useState("");
     const [isEdit, setIsEdit] = useState(false);
-    const [loader, setLoader] = useState(false)
-
-    useEffect(() => {
-        getUser()
-    }, [])
+    const [loader, setLoader] = useState(true)
 
     const list = useSelector(state => state.todoReducer.list);
-    const getUser = () => {
-        const user = useSelector(state => state.todoReducer.user);
-    }
-    console.log(user)
-    let { uid } = user.uid
+    const auth = getAuth();
+
+    const uid = auth.currentUser.uid
 
     const history = useHistory()
 
@@ -34,11 +28,9 @@ const Todo = () => {
 
             push(ref(db, 'users/' + uid), {
                 data: inputData
-            })
-                .then(() => {
-                    setInputData("");
-                }).catch(() => console.log("ERR"))
-
+            }).then(() => {
+                setInputData("");
+            }).catch(() => console.log("ERR"))
         } else {
             alert("Please Add a todo");
         }
@@ -80,6 +72,12 @@ const Todo = () => {
             alert('Firebase Error')
         });
     }
+    useEffect(() => {
+        if (list.length > 0) {
+            setLoader(false)
+        }
+
+    })
     if (loader) return <div className="loader"></div>
     return (
         <>
@@ -128,6 +126,7 @@ const Todo = () => {
                     </form>
                     <div className="all-todos">
                         {list.map(curElem => {
+
                             return (
                                 <div className="todo" key={curElem.id}>
                                     <p>{curElem.data}</p>
@@ -160,7 +159,7 @@ const Todo = () => {
                 </div>
             </div>
         </>
-    );
+    )
 };
 
 export default Todo
