@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+
 import './style.css'
 
 
@@ -32,18 +33,23 @@ const SignUp = () => {
             const auth = getAuth();
             createUserWithEmailAndPassword(auth, email, password)
                 .then((userCredential) => {
-                    // const user = userCredential.user;
+
+                    const user = userCredential.user;
+                    let { uid } = user
                     setLoader(false)
                     alert("User Sign Up successfully")
                     history.push('/todo')
+                    localStorage.setItem('login', `${uid}`)
                 })
                 .catch((error) => {
+                    console.log(error)
+                    setLoader(false)
                     alert("Invalid Credentials")
                 });
         }
     }
 
-if (loader) return <div className="loader"></div>
+    if (loader) return <div className="loader"></div>
     return (
         <>
             <div className="container">

@@ -23,6 +23,7 @@ const ConfirmPassword = () => {
                     history.push('/')
                 })
                 .catch((err) => {
+                    setLoader(false)
                     console.log(err)
                     alert("Something went wrong")
                 })

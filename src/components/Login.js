@@ -33,18 +33,21 @@ const Login = () => {
             const auth = getAuth();
             signInWithEmailAndPassword(auth, email, password)
                 .then((userCredential) => {
-                    // const user = userCredential.user;
-                    // alert("User login Successfully")
+                    const user = userCredential.user;
+                    let {uid} = user
                     setLoader(false)
                     history.push('/todo')
+                    localStorage.setItem('login',`${uid}`)
+
                 })
                 .catch((error) => {
-                    // const errorCode = error.code;
-                    // const errorMessage = error.message;
-                    alert("Invalid Credentials")
+                    console.log(error)
+                    setLoader(false)
+                    alert("Invalid Credentials or Connection Problem!")
                 });
         }
     }
+
 
     if (loader) return <div className="loader"></div>
     return (

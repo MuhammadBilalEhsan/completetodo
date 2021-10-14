@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { getDatabase, ref, push, child, remove, update } from "firebase/database";
 import "../App.css";
 import { useHistory } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { addTodo, delTodo, delAll, editTodo } from "../redux/actions/index";
+import { useSelector } from "react-redux";
 import { getAuth, signOut } from "firebase/auth";
 
 
@@ -12,41 +12,75 @@ const Todo = () => {
     const [inputData, setInputData] = useState("");
     const [id, setId] = useState("");
     const [isEdit, setIsEdit] = useState(false);
-    const [loader , setLoader] = useState(false)
+    const [loader, setLoader] = useState(false)
 
+    useEffect(() => {
+        getUser()
+    }, [])
 
     const list = useSelector(state => state.todoReducer.list);
-    const dispatch = useDispatch();
+    const getUser = () => {
+        const user = useSelector(state => state.todoReducer.user);
+    }
+    console.log(user)
+    let { uid } = user.uid
 
     const history = useHistory()
 
     const add_Todo = e => {
         e.preventDefault();
-        dispatch(addTodo(inputData));
-        setInputData("");
+        if (inputData.trim()) {
+            let db = getDatabase();
+
+            push(ref(db, 'users/' + uid), {
+                data: inputData
+            })
+                .then(() => {
+                    setInputData("");
+                }).catch(() => console.log("ERR"))
+
+        } else {
+            alert("Please Add a todo");
+        }
     };
     const edit_todo = e => {
         e.preventDefault();
-        if (inputData === "") {
+        if (!inputData) {
             alert("Please Add a todo");
         } else {
-            dispatch(editTodo(id, inputData));
+            let db = getDatabase()
+            const edit = {
+                data: inputData.trim(),
+            };
+            update(child(ref(db), 'users/' + uid + '/' + id), edit);
+
             setInputData("");
             setIsEdit(false);
         }
     };
+    const delOne = (id) => {
+        let db = getDatabase();
+        const newPostKey = remove(child(ref(db), 'users/' + uid + '/' + id)).key;
+    }
+    const del_all = (e) => {
+        e.preventDefault()
+        let db = getDatabase();
+        const newPostKey = remove(child(ref(db), 'users/' + uid)).key;
+    }
     const sign_out = (e) => {
+        setLoader(true)
         e.preventDefault()
         const auth = getAuth();
         signOut(auth).then(() => {
-            // Sign-out successful.
+            setLoader(false)
             history.push('/')
         }).catch((error) => {
-            // An error happened.
+            setLoader(false)
+            console.log(error)
             alert('Firebase Error')
         });
     }
-if(loader) return <div className="loader"></div>
+    if (loader) return <div className="loader"></div>
     return (
         <>
             <div className="cont">
@@ -82,7 +116,7 @@ if(loader) return <div className="loader"></div>
                         <div id="main-btns-div">
                             {
                                 list.length > 0 ? (
-                                    <button className="btns del-all" onClick={() => dispatch(delAll())}>
+                                    <button className="btns del-all" onClick={(e) => del_all(e)}>
                                         DELETE ALL
                                     </button>
                                 ) : ''
@@ -115,7 +149,7 @@ if(loader) return <div className="loader"></div>
                                                 ></i>)
                                         }
                                         <i
-                                            onClick={() => dispatch(delTodo(curElem.id))}
+                                            onClick={(e) => delOne(curElem.id)}
                                             className="btns del-btns fas fa-trash-alt"
                                         ></i>
                                     </div>
@@ -129,4 +163,4 @@ if(loader) return <div className="loader"></div>
     );
 };
 
-export default Todo;
+export default Todo

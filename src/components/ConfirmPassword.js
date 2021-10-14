@@ -28,6 +28,7 @@ const ConfirmPassword = () => {
                     history.push('/todo')
                 })
                 .catch((err) => {
+                    setLoader(false)
                     console.log(err)
                     alert("Something went wrong")
                 })

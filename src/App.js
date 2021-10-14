@@ -1,7 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as firebase from "@firebase/app";
+import { getDatabase, ref, onValue } from "firebase/database";
 import firebaseConfig from "./firebase/firebaseConfig";
-import { BrowserRouter as Router, Switch} from "react-router-dom";
+import { BrowserRouter as Router, Switch } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { getAll, addUser } from "./redux/actions/index";
+
+
 
 import PrivateRoute from './PrivateRoute'
 import Todo from './components/Todo';
@@ -16,21 +21,42 @@ firebase.initializeApp(firebaseConfig)
 
 
 const App = () => {
-  const [user, setUser] = useState(false)
-  const[loader,setLoader]= useState(true)
+  const [user, setUser] = useState({})
+  const [loader, setLoader] = useState(true)
+
+
+  const dispatch = useDispatch()
+
 
   const auth = getAuth()
   onAuthStateChanged(auth, user => {
     if (user) {
-      setUser(true)
+      setUser(user)
       setLoader(false)
+      dispatch(addUser(user))
     } else {
       setUser(false)
       setLoader(false)
     }
   })
+  useEffect(() => {
+    if (user) {
+      const db = getDatabase();
+      const starCountRef = ref(db, 'users/' + user?.uid);
+      onValue(starCountRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          dispatch(getAll(Object.entries(data).map(item => ({ ...item[1], id: item[0] }))))
 
-  if(loader) return <div className="loader"></div>
+        } else {
+          dispatch(getAll([]))
+        }
+      });
+    }
+
+  }, [user])
+
+  if (loader) return <div className="loader"></div>
 
   return (
     <>
