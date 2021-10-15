@@ -1,5 +1,5 @@
 const initialData = {
-    list: [],
+    list: null,
 };
 
 const todoReducer = (state = initialData, action) => {

@@ -12,11 +12,10 @@ const Todo = () => {
     const [inputData, setInputData] = useState("");
     const [id, setId] = useState("");
     const [isEdit, setIsEdit] = useState(false);
-    const [loader, setLoader] = useState(true)
+    const [loader, setLoader] = useState(true);
 
     const list = useSelector(state => state.todoReducer.list);
     const auth = getAuth();
-
     const uid = auth.currentUser.uid
 
     const history = useHistory()
@@ -25,7 +24,6 @@ const Todo = () => {
         e.preventDefault();
         if (inputData.trim()) {
             let db = getDatabase();
-
             push(ref(db, 'users/' + uid), {
                 data: inputData
             }).then(() => {
@@ -50,18 +48,28 @@ const Todo = () => {
             setIsEdit(false);
         }
     };
+    const cancelEdit = (e) => {
+        e.preventDefault()
+        setInputData('');
+        setId(null);
+        setIsEdit(false);
+    }
     const delOne = (id) => {
         let db = getDatabase();
-        const newPostKey = remove(child(ref(db), 'users/' + uid + '/' + id)).key;
+        remove(child(ref(db), 'users/' + uid + '/' + id));
+        setLoader(false)
+
     }
     const del_all = (e) => {
         e.preventDefault()
         let db = getDatabase();
-        const newPostKey = remove(child(ref(db), 'users/' + uid)).key;
+        remove(child(ref(db), 'users/' + uid));
+        setLoader(false)
+
     }
     const sign_out = (e) => {
-        setLoader(true)
         e.preventDefault()
+        setLoader(true)
         const auth = getAuth();
         signOut(auth).then(() => {
             setLoader(false)
@@ -72,89 +80,103 @@ const Todo = () => {
             alert('Firebase Error')
         });
     }
+
     useEffect(() => {
-        if (list.length > 0) {
+        if (list) {
             setLoader(false)
         }
-
-    })
-    if (loader) return <div className="loader"></div>
+    }, [list])
     return (
         <>
             <div className="cont">
                 <div className="sub-cont">
-                    <h1>Add Todo here</h1>
-                    <form>
-                        <input
-                            className="inpu"
-                            placeholder="✍ write here"
-                            value={inputData}
-                            autoFocus
-                            maxLength="50"
-                            onChange={e => setInputData(e.target.value)}
-                            type="text"
-                        />
-                        {isEdit ? (
+                    <div className="upper-div">
+                        <h1>Add Todo here</h1>
+                        <form>
                             <input
-                                type="submit"
-                                className="btns add-btns"
-                                value="Update"
-                                onClick={e => edit_todo(e)}
+                                className="inpu"
+                                placeholder="✍ write here"
+                                value={inputData}
+                                autoFocus
+                                maxLength="100"
+                                onChange={e => setInputData(e.target.value)}
+                                type="text"
                             />
-                        ) : (
-                            <input
-                                type="submit"
-                                className="btns add-btns"
-                                value="Add"
-                                onClick={e => add_Todo(e)}
-                            />
-                        )}
+                            {isEdit ? (
+                                <input
+                                    type="submit"
+                                    className="btns add-btns"
+                                    value="Update"
+                                    onClick={e => edit_todo(e)}
+                                />
+                            ) : (
+                                <input
+                                    type="submit"
+                                    className="btns add-btns"
+                                    value="Add"
+                                    onClick={e => add_Todo(e)}
+                                />
+                            )}
 
-                        <br />
-                        <div id="main-btns-div">
-                            {
-                                list.length > 0 ? (
-                                    <button className="btns del-all" onClick={(e) => del_all(e)}>
-                                        DELETE ALL
-                                    </button>
-                                ) : ''
-                            }
-                            <button className="btns del-all" onClick={(e) => sign_out(e)}>
-                                Log Out
-                            </button>
-                        </div>
-                    </form>
+                            <br />
+                            <div id="main-btns-div">
+                                {
+                                    list?.length > 0 && !isEdit ?
+                                        (<button className="btns del-all" onClick={(e) => del_all(e)}>
+                                            DELETE ALL
+                                        </button>)
+                                        : ''
+                                }
+                                <button className="btns del-all" onClick={(e) => sign_out(e)}>
+                                    Log Out
+                                </button>
+                                {
+                                    isEdit ? (<button className="btns del-all"
+                                        onClick={(e) => cancelEdit(e)}
+                                        className="btns del-all"
+                                    >Cancel Edit</button>)
+                                        : <></>
+                                }
+                            </div>
+                        </form>
+                    </div>
                     <div className="all-todos">
-                        {list.map(curElem => {
+                        {
+                            loader ? <div className="loader"></div> : list.map(curElem => {
 
-                            return (
-                                <div className="todo" key={curElem.id}>
-                                    <p>{curElem.data}</p>
+                                return (
 
-                                    <div className="btns">
-                                        {
-                                            isEdit ?
-                                                (<i
-                                                    onClick={(e) => edit_todo(e)}
-                                                    className="btns edit-btns far fa-edit"
-                                                ></i>)
-                                                : (<i
-                                                    onClick={() => {
-                                                        setInputData(curElem.data);
-                                                        setId(curElem.id);
-                                                        setIsEdit(true);
-                                                    }}
-                                                    className="btns edit-btns far fa-edit"
-                                                ></i>)
-                                        }
-                                        <i
-                                            onClick={(e) => delOne(curElem.id)}
-                                            className="btns del-btns fas fa-trash-alt"
-                                        ></i>
+                                    <div className="todo" key={curElem.id}>
+                                        <p>{curElem.data}</p>
+
+                                        <div className="two-btns">
+                                            {
+                                                isEdit ?
+                                                    (<i
+                                                        onClick={(e) => edit_todo(e)}
+                                                        className="btns edit-btns far fa-edit"
+                                                    ></i>)
+                                                    : (<i
+                                                        onClick={() => {
+                                                            setInputData(curElem.data);
+                                                            setId(curElem.id);
+                                                            setIsEdit(true);
+                                                        }}
+                                                        className="btns edit-btns far fa-edit"
+                                                    ></i>)
+                                            }
+                                            {
+                                                isEdit ? '' :
+                                                    <i
+                                                        onClick={(e) => delOne(curElem.id)}
+                                                        className="btns del-btns fas fa-trash-alt"
+                                                    ></i>
+                                            }
+                                        </div>
                                     </div>
-                                </div>
-                            );
-                        })}
+                                );
+                            })
+                        }
                     </div>
                 </div>
             </div>

@@ -21,23 +21,21 @@ const Login = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        setLoader(true)
+        console.log("login")
         let { email, password } = loginData
-        if (!email || email.length < 7) {
+        if (!email ) {
             alert("Please Enter The Correct Email!")
         }
         else if (!password || password.length < 8) {
             alert("Password! contains at least 8 characters !")
         } else {
-
+            setLoader(true)
             const auth = getAuth();
             signInWithEmailAndPassword(auth, email, password)
                 .then((userCredential) => {
-                    const user = userCredential.user;
-                    let {uid} = user
+                    // const user = userCredential.user;
                     setLoader(false)
                     history.push('/todo')
-                    localStorage.setItem('login',`${uid}`)
 
                 })
                 .catch((error) => {

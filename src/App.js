@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import * as firebase from "@firebase/app";
 import { getDatabase, ref, onValue } from "firebase/database";
 import firebaseConfig from "./firebase/firebaseConfig";
-import { BrowserRouter as Router, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Redirect, Switch } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { getAll } from "./redux/actions/index";
 
@@ -64,10 +64,19 @@ const App = () => {
 
           <PrivateRoute auth={user} exact path="/" SuccessComp={<Todo />} FailComp={<Login />} />
           <PrivateRoute auth={user} exact path="/todo" SuccessComp={<Todo />} FailComp={<Login />} />
-          <PrivateRoute auth={user} exact path="/signup" SuccessComp={<Todo />} FailComp={<SignUp />} />
-          <PrivateRoute auth={user} exact path="/rpassword" SuccessComp={<Todo />} FailComp={<ResetPassword />} />
-          <PrivateRoute auth={user} exact path="/cpassword" SuccessComp={<Todo />} FailComp={<ConfirmPassword />} />
+          <PrivateRoute auth={user} path="/signup" SuccessComp={<Todo />} FailComp={<SignUp />} />
+          <PrivateRoute auth={user} path="/rpassword" SuccessComp={<Todo />} FailComp={<ResetPassword />} />
+          <PrivateRoute auth={user} path="/cpassword" SuccessComp={<Todo />} FailComp={<ConfirmPassword />} />
           <PrivateRoute auth={user} path="/*" SuccessComp={<Todo />} FailComp={<Login />} />
+
+
+
+          {/* <PrivateRoute auth={user} exact path="/" SuccessComp={<Todo />} FailComp={<Redirect to='/' />} />
+          <PrivateRoute auth={user} exact path="/todo" SuccessComp={<Todo />} FailComp={<Redirect to='/' />} />
+          <PrivateRoute auth={user} exact path="/signup" SuccessComp={<Todo />} FailComp={<Redirect to='/signup' />} />
+          <PrivateRoute auth={user} exact path="/rpassword" SuccessComp={<Todo />} FailComp={<Redirect to='/rpassword' />} />
+          <PrivateRoute auth={user} exact path="/cpassword" SuccessComp={<Todo />} FailComp={<Redirect to='/cpassword' />} />
+          <PrivateRoute auth={user} path="/*" SuccessComp={<Todo />} FailComp={<Redirect to='/' />} /> */}
 
         </Switch>
       </Router>

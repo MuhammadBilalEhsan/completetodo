@@ -22,29 +22,25 @@ const SignUp = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        setLoader(true)
         let { email, password } = loginData
-        if (!email || email.length < 7) {
+        if (!email ) {
             alert("Please Enter The Correct Email!")
         }
         else if (!password || password.length < 8) {
             alert("Password! contains at least 8 characters !")
         } else {
+            setLoader(true)
             const auth = getAuth();
             createUserWithEmailAndPassword(auth, email, password)
                 .then((userCredential) => {
-
-                    const user = userCredential.user;
-                    let { uid } = user
                     setLoader(false)
                     alert("User Sign Up successfully")
                     history.push('/todo')
-                    localStorage.setItem('login', `${uid}`)
                 })
                 .catch((error) => {
                     console.log(error)
-                    setLoader(false)
                     alert("Invalid Credentials")
+                    setLoader(false)
                 });
         }
     }
