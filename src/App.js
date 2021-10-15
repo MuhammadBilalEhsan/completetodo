@@ -62,21 +62,21 @@ const App = () => {
       <Router>
         <Switch>
 
-          <PrivateRoute auth={user} exact path="/" SuccessComp={<Todo />} FailComp={<Login />} />
+          {/* <PrivateRoute auth={user} exact path="/" SuccessComp={<Todo />} FailComp={<Login />} />
           <PrivateRoute auth={user} exact path="/todo" SuccessComp={<Todo />} FailComp={<Login />} />
           <PrivateRoute auth={user} path="/signup" SuccessComp={<Todo />} FailComp={<SignUp />} />
           <PrivateRoute auth={user} path="/rpassword" SuccessComp={<Todo />} FailComp={<ResetPassword />} />
           <PrivateRoute auth={user} path="/cpassword" SuccessComp={<Todo />} FailComp={<ConfirmPassword />} />
-          <PrivateRoute auth={user} path="/*" SuccessComp={<Todo />} FailComp={<Login />} />
+          <PrivateRoute auth={user} path="/*" SuccessComp={<Todo />} FailComp={<Login />} /> */}
 
 
 
-          {/* <PrivateRoute auth={user} exact path="/" SuccessComp={<Todo />} FailComp={<Redirect to='/' />} />
+          <PrivateRoute auth={user} exact path="/" SuccessComp={<Redirect to='/todo' />} FailComp={<Login />} />
           <PrivateRoute auth={user} exact path="/todo" SuccessComp={<Todo />} FailComp={<Redirect to='/' />} />
           <PrivateRoute auth={user} exact path="/signup" SuccessComp={<Todo />} FailComp={<Redirect to='/signup' />} />
           <PrivateRoute auth={user} exact path="/rpassword" SuccessComp={<Todo />} FailComp={<Redirect to='/rpassword' />} />
           <PrivateRoute auth={user} exact path="/cpassword" SuccessComp={<Todo />} FailComp={<Redirect to='/cpassword' />} />
-          <PrivateRoute auth={user} path="/*" SuccessComp={<Todo />} FailComp={<Redirect to='/' />} /> */}
+          <PrivateRoute auth={user} path="/*" SuccessComp={<Todo />} FailComp={<Redirect to='/' />} />
 
         </Switch>
       </Router>
