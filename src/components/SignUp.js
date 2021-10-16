@@ -38,9 +38,9 @@ const SignUp = () => {
                     history.push('/todo')
                 })
                 .catch((error) => {
-                    console.log(error)
-                    alert("Invalid Credentials")
                     setLoader(false)
+                    console.log(error)
+                    alert(error.message)
                 });
         }
     }

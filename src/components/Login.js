@@ -39,9 +39,9 @@ const Login = () => {
 
                 })
                 .catch((error) => {
-                    console.log(error)
                     setLoader(false)
-                    alert("Invalid Credentials or Connection Problem!")
+                    console.log(error)
+                    alert(error.message)
                 });
         }
     }

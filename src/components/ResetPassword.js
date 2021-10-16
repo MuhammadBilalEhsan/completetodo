@@ -25,7 +25,7 @@ const ConfirmPassword = () => {
                 .catch((err) => {
                     setLoader(false)
                     console.log(err)
-                    alert("Something went wrong")
+                    alert(err.message)
                 })
         }
     }
